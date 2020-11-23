@@ -1,14 +1,14 @@
 (export (version D)
   (design
     (source /home/tk/tk20dk/rosalyn-tx/kicad/rosalyn-tx.sch)
-    (date "2020-11-19T13:52:49 CET")
+    (date "2020-11-23T17:34:14 CET")
     (tool "Eeschema 5.1.8-db9833491~87~ubuntu20.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
         (title RosalynTX)
         (company www.2-0.dk)
         (rev v1.0)
-        (date 2020-11-05)
+        (date 2020-11-23)
         (source rosalyn-tx.sch)
         (comment (number 1) (value ""))
         (comment (number 2) (value ""))
