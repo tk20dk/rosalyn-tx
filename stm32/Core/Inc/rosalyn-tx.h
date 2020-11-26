@@ -20,8 +20,11 @@ public:
 
 private:
   bool Failsafe;
-  uint32_t Data[ NoOfPPMs ];
-  uint32_t Index;
+  uint32_t Data3[ NoOfPPMs ];
+  uint32_t Data4[ NoOfPPMs ];
+  uint32_t Index3;
+  uint32_t Index4;
+  uint32_t OldIC3;
   uint32_t OldIC4;
 };
 
