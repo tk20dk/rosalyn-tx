@@ -5,6 +5,7 @@
 #include <cstdarg>
 #include "stm32f0xx_hal.h"
 #include "usbd_cdc_if.h"
+#include "sx1268-def.h"
 
 
 void UsbPrintf( char const *const Format, ... );
@@ -34,27 +35,24 @@ class TSystem
       Flag( FLAG_CONFIG ),
       Mode( 0 ),
       UnitId( 0 ),
-      SensorDelay( 60 ),
-      TxPower( 2 ),
+      TxPower( -3 ),  // -3dBm to 22dBm
       Channel( 38 ),
-      CodingRate( 5 ),      // 5 to 8  => 4/5 to 4/8
-      SpreadingFactor( 7 ), // 6 to 12 => 85 to 4096 chips/symbols
-      SignalBandwidth( 9 )  // 0 to 9  => 7,8kHz to 500kHz
+	  Modulation
+      {
+        { LORA_BW_125, LORA_CR_4_5, LORA_SF12 }, // Low
+        { LORA_BW_250, LORA_CR_4_5, LORA_SF8  }, // Medium
+        { LORA_BW_500, LORA_CR_4_5, LORA_SF5  }  // High
+      }
     {
     }
 
     uint8_t Flag;
     uint8_t Mode;
     uint8_t UnitId;
-    uint8_t SensorDelay;
     int8_t  TxPower;
     uint8_t Channel;
-    uint8_t CodingRate;
-    uint8_t SpreadingFactor;
-    uint8_t SignalBandwidth;
+    Modulation_t Modulation[ 3 ];
   };
-
-  void UpdateConfig( void );
 
 public:
   TConfig Config;

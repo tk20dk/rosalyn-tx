@@ -327,10 +327,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, HMI_ERROR2_Pin|HMI_STATUS2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(E22_NRST_GPIO_Port, E22_NRST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RADIO_NRST_GPIO_Port, RADIO_NRST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, E22_TXEN_Pin|E22_RXEN_Pin|E22_CS_Pin|HMI_ERROR1_Pin
+  HAL_GPIO_WritePin(GPIOB, RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR1_Pin
                           |HMI_STATUS1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
@@ -358,28 +358,28 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : E22_DIO1_Pin E22_BUSY_Pin */
-  GPIO_InitStruct.Pin = E22_DIO1_Pin|E22_BUSY_Pin;
+  /*Configure GPIO pins : RADIO_DIO1_Pin RADIO_BUSY_Pin */
+  GPIO_InitStruct.Pin = RADIO_DIO1_Pin|RADIO_BUSY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : E22_NRST_Pin */
-  GPIO_InitStruct.Pin = E22_NRST_Pin;
+  /*Configure GPIO pin : RADIO_NRST_Pin */
+  GPIO_InitStruct.Pin = RADIO_NRST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(E22_NRST_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(RADIO_NRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : E22_DIO2_Pin */
-  GPIO_InitStruct.Pin = E22_DIO2_Pin;
+  /*Configure GPIO pin : RADIO_DIO2_Pin */
+  GPIO_InitStruct.Pin = RADIO_DIO2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(E22_DIO2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(RADIO_DIO2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : E22_TXEN_Pin E22_RXEN_Pin E22_CS_Pin HMI_ERROR1_Pin
+  /*Configure GPIO pins : RADIO_TXEN_Pin RADIO_RXEN_Pin RADIO_NSS_Pin HMI_ERROR1_Pin
                            HMI_STATUS1_Pin */
-  GPIO_InitStruct.Pin = E22_TXEN_Pin|E22_RXEN_Pin|E22_CS_Pin|HMI_ERROR1_Pin
+  GPIO_InitStruct.Pin = RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR1_Pin
                           |HMI_STATUS1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;

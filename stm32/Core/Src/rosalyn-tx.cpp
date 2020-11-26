@@ -1,11 +1,18 @@
 #include "rosalyn-tx.h"
 
 
+TSpi Spi( hspi1 );
 TSystem System;
 TRosalynTx RosalynTx;
 
 void TRosalynTx::Loop()
 {
+  if( RadioFlag )
+  {
+    RadioFlag = false;
+    Radio.Interrupt();
+  }
+
   if(( HAL_GetTick() % 1000 ) == 0 )
   {
     UsbPrintf( "3: %4u %4u %4u %4u %4u %4u %4u %4u\n",
@@ -17,12 +24,77 @@ void TRosalynTx::Loop()
   }
 }
 
+void TRosalynTx::RadioEvent( TRadioEvent const Event )
+{
+  uint8_t Buffer[ 256 ];
+
+  if( Event == TRadioEvent::RxDone )
+  {
+    auto const Snr = Radio.GetSnr();
+    auto const Rssi = Radio.GetRssi();
+    auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
+
+    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u Length error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+
+    Radio.Receive();
+  }
+
+  if( Event == TRadioEvent::TxDone )
+  {
+    Radio.Receive();
+  }
+
+  if( Event == TRadioEvent::Timeout )
+  {
+  }
+
+  if( Event == TRadioEvent::CrcError )
+  {
+    auto const Snr = Radio.GetSnr();
+    auto const Rssi = Radio.GetRssi();
+    auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
+
+    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u CRC Error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+  }
+
+  if( Event == TRadioEvent::NoCrc )
+  {
+    auto const Snr = Radio.GetSnr();
+    auto const Rssi = Radio.GetRssi();
+    auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
+
+    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u No CRC\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+  }
+}
+
 void TRosalynTx::Setup()
 {
   UsbPrintf( "RosalynTX\n" );
+
+  if( Radio.Setup( System.Config.Modulation[ 2 ], System.Config.TxPower, System.Config.Channel ))
+  {
+    Radio.Receive();
+  }
 }
 
-void TRosalynTx::TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
+void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
+{
+  switch( GPIO_Pin )
+  {
+    case RADIO_DIO1_Pin:
+    {
+      RadioFlag = true;
+    }
+    break;
+
+    default:
+    {
+    }
+    break;
+  }
+}
+
+void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
 {
   if( htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3 )
   {
@@ -80,12 +152,26 @@ void TRosalynTx::TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
 
 TRosalynTx::TRosalynTx() :
   Failsafe( true ),
+  RadioFlag( false ),
   Data3(),
   Data4(),
   Index3( 0 ),
   Index4( 0 ),
   OldIC3( 0 ),
-  OldIC4( 0 )
+  OldIC4( 0 ),
+  Radio(
+    433050000,
+	RADIO_NSS_GPIO_Port,
+	RADIO_NSS_Pin,
+	RADIO_NRST_GPIO_Port,
+	RADIO_NRST_Pin,
+	RADIO_BUSY_GPIO_Port,
+	RADIO_BUSY_Pin,
+	RADIO_RXEN_GPIO_Port,
+	RADIO_RXEN_Pin,
+	RADIO_TXEN_GPIO_Port,
+	RADIO_TXEN_Pin,
+    std::bind( &TRosalynTx::RadioEvent, this, std::placeholders::_1 ))
 {
 }
 
@@ -99,7 +185,12 @@ extern "C" void RosalynTxSetup()
   RosalynTx.Setup();
 }
 
+extern "C" void HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
+{
+  RosalynTx.HAL_GPIO_EXTI_Callback( GPIO_Pin );
+}
+
 extern "C" void HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
 {
-  RosalynTx.TIM_IC_CaptureCallback( htim );
+  RosalynTx.HAL_TIM_IC_CaptureCallback( htim );
 }
