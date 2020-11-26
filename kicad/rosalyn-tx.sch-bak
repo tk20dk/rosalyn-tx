@@ -82,14 +82,14 @@ usb_P
 $Comp
 L power:GND #PWR037
 U 1 1 5FC6AB21
-P 9050 3900
+P 9050 3950
 AR Path="/5FC6AB21" Ref="#PWR037"  Part="1" 
 AR Path="/5FC29817/5FC6AB21" Ref="#PWR?"  Part="1" 
-F 0 "#PWR037" H 9050 3650 50  0001 C CNN
-F 1 "GND" H 9055 3727 50  0000 C CNN
-F 2 "" H 9050 3900 50  0001 C CNN
-F 3 "" H 9050 3900 50  0001 C CNN
-	1    9050 3900
+F 0 "#PWR037" H 9050 3700 50  0001 C CNN
+F 1 "GND" H 9055 3777 50  0000 C CNN
+F 2 "" H 9050 3950 50  0001 C CNN
+F 3 "" H 9050 3950 50  0001 C CNN
+	1    9050 3950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -184,19 +184,19 @@ F 3 "" H 10350 3950 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Text GLabel 9800 3000 2    50   Input ~ 0
-e22_rxen
+radio_rxen
 Text GLabel 9800 3100 2    50   Input ~ 0
-e22_txen
+radio_txen
 Text GLabel 9800 3200 2    50   BiDi ~ 0
-e22_dio1
+radio_dio1
 Text GLabel 9800 3300 2    50   BiDi ~ 0
-e22_dio2
+radio_dio2
 Text GLabel 9800 3400 2    50   Output ~ 0
-e22_busy
+radio_busy
 Text GLabel 9800 3500 2    50   Input ~ 0
-e22_nrst
+radio_nrst
 Text GLabel 8400 3000 0    50   Input ~ 0
-e22_nss
+radio_nss
 Text GLabel 8400 3100 0    50   Input ~ 0
 spi1_sck
 Text GLabel 8400 3200 0    50   Output ~ 0
@@ -335,19 +335,19 @@ usb_P
 Text GLabel 6750 4750 2    50   BiDi ~ 0
 usb_N
 Text GLabel 5450 3850 0    50   Output ~ 0
-e22_rxen
+radio_rxen
 Text GLabel 5450 3750 0    50   Output ~ 0
-e22_txen
+radio_txen
 Text GLabel 6750 3850 2    50   BiDi ~ 0
-e22_dio1
+radio_dio1
 Text GLabel 5450 3650 0    50   BiDi ~ 0
-e22_dio2
+radio_dio2
 Text GLabel 6750 3950 2    50   Input ~ 0
-e22_busy
+radio_busy
 Text GLabel 6750 4050 2    50   Output ~ 0
-e22_nrst
+radio_nrst
 Text GLabel 5450 4850 0    50   Output ~ 0
-e22_nss
+radio_nss
 Text GLabel 6750 4150 2    50   Input ~ 0
 spi1_sck
 Text GLabel 6750 4350 2    50   Input ~ 0
@@ -1475,4 +1475,6 @@ F 3 "" H 10200 5450 50  0001 C CNN
 	1    10200 5450
 	0    -1   -1   0   
 $EndComp
+Wire Wire Line
+	9050 3950 9050 3900
 $EndSCHEMATC
