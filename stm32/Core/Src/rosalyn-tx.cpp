@@ -2,7 +2,6 @@
 
 
 TSpi Spi( hspi1 );
-TSystem System;
 TRosalynTx RosalynTx;
 
 void TRosalynTx::Loop()
@@ -72,7 +71,7 @@ void TRosalynTx::Setup()
   UsbPrintf( "RosalynTX\n" );
   HmiStatus( true );
 
-  if( Radio.Setup( System.Config.Modulation[ 2 ], System.Config.TxPower, System.Config.Channel ))
+  if( Radio.Setup( NvData.Modulation[ 2 ], NvData.TxPower, NvData.Channel ))
   {
     Radio.Receive();
   }
@@ -187,7 +186,8 @@ TRosalynTx::TRosalynTx() :
 	RADIO_RXEN_Pin,
 	RADIO_TXEN_GPIO_Port,
 	RADIO_TXEN_Pin,
-    std::bind( &TRosalynTx::RadioEvent, this, std::placeholders::_1 ))
+    std::bind( &TRosalynTx::RadioEvent, this, std::placeholders::_1 )),
+  NvData()
 {
 }
 

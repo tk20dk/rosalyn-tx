@@ -1,11 +1,8 @@
 #ifndef SYSTEM_H__
 #define SYSTEM_H__
 
-#include <cstdlib>
-#include <cstdarg>
 #include "main.h"
 #include "usbd_cdc_if.h"
-#include "sx1268-def.h"
 
 
 void UsbPrintf( char const *const Format, ... );
@@ -46,40 +43,5 @@ inline void HmiErrorExt( bool const Mode )
 {
   HMI_ERROR_EXT_GPIO_Port->BSRR = Mode ? HMI_ERROR_EXT_Pin : HMI_ERROR_EXT_Pin << 16;
 }
-
-
-class TSystem
-{
-  struct TConfig
-  {
-    static uint8_t const FLAG_CONFIG = 0x12;
-
-    TConfig() :
-      Flag( FLAG_CONFIG ),
-      Mode( 0 ),
-      UnitId( 0 ),
-      TxPower( -3 ),  // -3dBm to 22dBm
-      Channel( 38 ),
-	  Modulation
-      {
-        { LORA_BW_125, LORA_CR_4_5, LORA_SF12 }, // Low
-        { LORA_BW_250, LORA_CR_4_5, LORA_SF8  }, // Medium
-        { LORA_BW_500, LORA_CR_4_5, LORA_SF5  }  // High
-      }
-    {
-    }
-
-    uint8_t Flag;
-    uint8_t Mode;
-    uint8_t UnitId;
-    int8_t  TxPower;
-    uint8_t Channel;
-    Modulation_t Modulation[ 3 ];
-  };
-
-public:
-  TConfig Config;
-};
-extern TSystem System;
 
 #endif // SYSTEM_H__
