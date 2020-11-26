@@ -2,7 +2,6 @@
 #define SX1268_H__
 
 #include <functional>
-#include "main.h"
 #include "system.h"
 #include "spi.h"
 #include "sx1268-def.h"

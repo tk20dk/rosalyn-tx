@@ -1,12 +1,7 @@
 #include "nvdata.h"
 
 
-TNvData::TNvData()
-{
-  Load();
-}
-
-void TNvData::Load()
+void TNvData::Setup()
 {
   *this = *reinterpret_cast< TNvData* >( NvBank1 );
 }

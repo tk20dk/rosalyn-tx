@@ -68,6 +68,7 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
 
 void TRosalynTx::Setup()
 {
+  NvData.Setup();
   UsbPrintf( "RosalynTX\n" );
   HmiStatus( true );
 

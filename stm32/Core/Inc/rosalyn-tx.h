@@ -1,7 +1,6 @@
 #ifndef ROSALYN_TX_H__
 #define ROSALYN_TX_H__
 
-#include "main.h"
 #include "nvdata.h"
 #include "system.h"
 #include "sx1268.h"

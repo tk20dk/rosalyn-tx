@@ -1,7 +1,11 @@
 #ifndef NVDATA_H__
 #define NVDATA_H__
 
-#include "stm32f0xx_hal.h"
+#ifdef STM32F303xC
+  #include "stm32f3xx_hal.h"
+#elif defined ( STM32F070x6 ) || defined( STM32F072xB )
+  #include "stm32f0xx_hal.h"
+#endif
 #include "config.h"
 
 
@@ -13,8 +17,7 @@ public:
   static uint32_t const NvBank1 = 0x0801F000;
   static uint32_t const NvBank2 = 0x0801F800;
 
-  TNvData();
-  void Load();
+  void Setup();
   void Update();
 
 private:
