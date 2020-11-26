@@ -34,7 +34,7 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u Length error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u Length error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
 
     Radio.Receive();
   }
@@ -54,7 +54,7 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u CRC Error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u CRC Error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
   }
 
   if( Event == TRadioEvent::NoCrc )
@@ -63,13 +63,14 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "433 Rssi:%4d Snr:%3d.%u Len:%u No CRC\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u No CRC\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
   }
 }
 
 void TRosalynTx::Setup()
 {
   UsbPrintf( "RosalynTX\n" );
+  HmiStatus( true );
 
   if( Radio.Setup( System.Config.Modulation[ 2 ], System.Config.TxPower, System.Config.Channel ))
   {
@@ -87,8 +88,19 @@ void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
     }
     break;
 
+    case RADIO_DIO2_Pin:
+    {
+    }
+    break;
+
+    case RADIO_BUSY_Pin:
+    {
+    }
+    break;
+
     default:
     {
+      HmiError( true );
     }
     break;
   }
@@ -147,6 +159,10 @@ void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
     {
       Index4 = 0;
     }
+  }
+  else
+  {
+    HmiError( true );
   }
 }
 

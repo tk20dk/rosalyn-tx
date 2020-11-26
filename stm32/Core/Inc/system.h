@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 #include <cstdarg>
-#include "stm32f0xx_hal.h"
+#include "main.h"
 #include "usbd_cdc_if.h"
 #include "sx1268-def.h"
 
@@ -16,21 +16,44 @@ inline void SetPin( GPIO_TypeDef *const Port, uint32_t const Pin )
 {
   Port->BSRR = Pin;
 }
+
 inline void ResetPin( GPIO_TypeDef *const Port, uint32_t const Pin )
 {
   Port->BSRR = ( Pin << 16U );
 }
+
 inline bool ReadPin( GPIO_TypeDef *const Port, uint32_t const Pin )
 {
   return (( Port->IDR & Pin ) != 0U );
 }
 
-uint8_t const FLAG_CONFIG = 0x12;
+inline void HmiStatus( bool const Mode )
+{
+  HMI_STATUS_GPIO_Port->BSRR = Mode ? HMI_STATUS_Pin : HMI_STATUS_Pin << 16;
+}
+
+inline void HmiError( bool const Mode )
+{
+  HMI_ERROR_GPIO_Port->BSRR = Mode ? HMI_ERROR_Pin : HMI_ERROR_Pin << 16;
+}
+
+inline void HmiStatusExt( bool const Mode )
+{
+  HMI_STATUS_EXT_GPIO_Port->BSRR = Mode ? HMI_STATUS_EXT_Pin : HMI_STATUS_EXT_Pin << 16;
+}
+
+inline void HmiErrorExt( bool const Mode )
+{
+  HMI_ERROR_EXT_GPIO_Port->BSRR = Mode ? HMI_ERROR_EXT_Pin : HMI_ERROR_EXT_Pin << 16;
+}
+
 
 class TSystem
 {
   struct TConfig
   {
+    static uint8_t const FLAG_CONFIG = 0x12;
+
     TConfig() :
       Flag( FLAG_CONFIG ),
       Mode( 0 ),

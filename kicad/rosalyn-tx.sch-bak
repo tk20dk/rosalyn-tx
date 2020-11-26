@@ -50,19 +50,6 @@ $EndComp
 Text GLabel 2700 2250 2    50   Output ~ 0
 vcc_usb
 $Comp
-L power:GND #PWR01
-U 1 1 5FC6AB13
-P 1800 3750
-AR Path="/5FC6AB13" Ref="#PWR01"  Part="1" 
-AR Path="/5FC29817/5FC6AB13" Ref="#PWR?"  Part="1" 
-F 0 "#PWR01" H 1800 3500 50  0001 C CNN
-F 1 "GND" H 1805 3577 50  0000 C CNN
-F 2 "" H 1800 3750 50  0001 C CNN
-F 3 "" H 1800 3750 50  0001 C CNN
-	1    1800 3750
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR02
 U 1 1 5FC6AB19
 P 2100 3750
@@ -636,9 +623,9 @@ Text GLabel 2700 4850 2    50   BiDi ~ 0
 usb_N
 NoConn ~ 5450 3250
 Text GLabel 5450 3350 0    50   Output ~ 0
-hmi_error2
+hmi_error_ext
 Text GLabel 5450 3450 0    50   Output ~ 0
-hmi_status2
+hmi_status_ext
 $Comp
 L power:+3.3V #PWR012
 U 1 1 5FC6AC39
@@ -653,9 +640,9 @@ F 3 "" H 9100 2050 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 Text GLabel 9000 1150 1    50   Input ~ 0
-hmi_status1
+hmi_status
 Text GLabel 9200 1150 1    50   Input ~ 0
-hmi_error1
+hmi_error
 $Comp
 L Device:R R?
 U 1 1 5FC6AC4D
@@ -1354,9 +1341,9 @@ F 3 "" H 9800 2050 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 Text GLabel 9700 1150 1    50   Input ~ 0
-hmi_status2
+hmi_status_ext
 Text GLabel 9900 1150 1    50   Input ~ 0
-hmi_error2
+hmi_error_ext
 $Comp
 L Device:R R?
 U 1 1 5FA5BF71
@@ -1395,9 +1382,9 @@ F 3 "~" H 9850 1750 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 Text GLabel 5450 4450 0    50   Output ~ 0
-hmi_error1
+hmi_error
 Text GLabel 5450 4550 0    50   Output ~ 0
-hmi_status1
+hmi_status
 NoConn ~ 5450 2950
 NoConn ~ 5450 3050
 $Comp
@@ -1477,4 +1464,5 @@ F 3 "" H 10200 5450 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9050 3950 9050 3900
+NoConn ~ 1800 3750
 $EndSCHEMATC

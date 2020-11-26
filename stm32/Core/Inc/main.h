@@ -58,10 +58,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define HMI_ERROR2_Pin GPIO_PIN_14
-#define HMI_ERROR2_GPIO_Port GPIOC
-#define HMI_STATUS2_Pin GPIO_PIN_15
-#define HMI_STATUS2_GPIO_Port GPIOC
+#define HMI_ERROR_EXT_Pin GPIO_PIN_14
+#define HMI_ERROR_EXT_GPIO_Port GPIOC
+#define HMI_STATUS_EXT_Pin GPIO_PIN_15
+#define HMI_STATUS_EXT_GPIO_Port GPIOC
 #define RADIO_DIO1_Pin GPIO_PIN_2
 #define RADIO_DIO1_GPIO_Port GPIOA
 #define RADIO_BUSY_Pin GPIO_PIN_3
@@ -76,10 +76,10 @@ void Error_Handler(void);
 #define RADIO_RXEN_GPIO_Port GPIOB
 #define RADIO_NSS_Pin GPIO_PIN_12
 #define RADIO_NSS_GPIO_Port GPIOB
-#define HMI_ERROR1_Pin GPIO_PIN_8
-#define HMI_ERROR1_GPIO_Port GPIOB
-#define HMI_STATUS1_Pin GPIO_PIN_9
-#define HMI_STATUS1_GPIO_Port GPIOB
+#define HMI_ERROR_Pin GPIO_PIN_8
+#define HMI_ERROR_GPIO_Port GPIOB
+#define HMI_STATUS_Pin GPIO_PIN_9
+#define HMI_STATUS_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

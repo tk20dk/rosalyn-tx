@@ -324,14 +324,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, HMI_ERROR2_Pin|HMI_STATUS2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, HMI_ERROR_EXT_Pin|HMI_STATUS_EXT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(RADIO_NRST_GPIO_Port, RADIO_NRST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR1_Pin
-                          |HMI_STATUS1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR_Pin
+                          |HMI_STATUS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -339,8 +339,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HMI_ERROR2_Pin HMI_STATUS2_Pin */
-  GPIO_InitStruct.Pin = HMI_ERROR2_Pin|HMI_STATUS2_Pin;
+  /*Configure GPIO pins : HMI_ERROR_EXT_Pin HMI_STATUS_EXT_Pin */
+  GPIO_InitStruct.Pin = HMI_ERROR_EXT_Pin|HMI_STATUS_EXT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -377,10 +377,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RADIO_DIO2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RADIO_TXEN_Pin RADIO_RXEN_Pin RADIO_NSS_Pin HMI_ERROR1_Pin
-                           HMI_STATUS1_Pin */
-  GPIO_InitStruct.Pin = RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR1_Pin
-                          |HMI_STATUS1_Pin;
+  /*Configure GPIO pins : RADIO_TXEN_Pin RADIO_RXEN_Pin RADIO_NSS_Pin HMI_ERROR_Pin
+                           HMI_STATUS_Pin */
+  GPIO_InitStruct.Pin = RADIO_TXEN_Pin|RADIO_RXEN_Pin|RADIO_NSS_Pin|HMI_ERROR_Pin
+                          |HMI_STATUS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
