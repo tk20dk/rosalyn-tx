@@ -1,4 +1,5 @@
 #include "rosalyn-tx.h"
+#include "sbus.h"
 
 
 TSpi Spi( hspi1 );
@@ -12,6 +13,12 @@ void TRosalynTx::Loop()
     Radio.Interrupt();
   }
 
+  if( PpmFlag )
+  {
+    PpmFlag = false;
+    TransmitPPM();
+  }
+
   if(( HAL_GetTick() % 1000 ) == 0 )
   {
     UsbPrintf( "3: %4u %4u %4u %4u %4u %4u %4u %4u\n",
@@ -21,6 +28,27 @@ void TRosalynTx::Loop()
       Data4[ 0 ], Data4[ 1 ], Data4[ 2 ], Data4[ 3 ],
       Data4[ 4 ], Data4[ 5 ], Data4[ 6 ], Data4[ 7 ] );
   }
+
+  if(( HAL_GetTick() % 1000 ) == 0 )
+  {
+    HmiStatus( true );
+    HAL_Delay( 5 );
+    HmiStatus( false );
+  }
+}
+
+void TRosalynTx::TransmitPPM()
+{
+  TSbusData SbusData;
+
+  SbusData.SetPWM( Data3 );
+  auto const SbusFrame = SbusData.Encode();
+
+  uint8_t Buffer[ TSbusFrame::SbusFrameSize ];
+  int32_t LenOut = 0;
+  AesCrypto.EncryptCFB( SbusFrame.Buffer, TSbusFrame::SbusFrameSize, Buffer, LenOut );
+
+  Radio.Transmit( Buffer, LenOut );
 }
 
 void TRosalynTx::RadioEvent( TRadioEvent const Event )
@@ -68,7 +96,7 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
 
 void TRosalynTx::Setup()
 {
-  NvData.Setup();
+//  NvData.Setup();
   UsbPrintf( "RosalynTX\n" );
   HmiStatus( true );
 
@@ -132,6 +160,7 @@ void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
     else
     {
       Index3 = 0;
+      PpmFlag = true;
     }
   }
   else if( htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4 )
@@ -167,7 +196,8 @@ void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
 }
 
 TRosalynTx::TRosalynTx() :
-  Failsafe( true ),
+  NvData(),
+  PpmFlag( false ),
   RadioFlag( false ),
   Data3(),
   Data4(),
@@ -188,7 +218,7 @@ TRosalynTx::TRosalynTx() :
 	RADIO_TXEN_GPIO_Port,
 	RADIO_TXEN_Pin,
     std::bind( &TRosalynTx::RadioEvent, this, std::placeholders::_1 )),
-  NvData()
+  AesCrypto( NvData.AesIV, NvData.AesKey )
 {
 }
 
