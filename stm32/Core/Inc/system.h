@@ -2,7 +2,6 @@
 #define SYSTEM_H__
 
 #include "main.h"
-#include "usbd_cdc_if.h"
 
 
 void UsbPrintf( char const *const Format, ... );

@@ -1,5 +1,6 @@
 #include <cstdarg>
 #include "system.h"
+#include "usbd_cdc_if.h"
 
 
 void UartPrintf( char const *const Format, ... )

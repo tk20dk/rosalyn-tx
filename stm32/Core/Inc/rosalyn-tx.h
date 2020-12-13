@@ -29,11 +29,8 @@ private:
   TNvData NvData;
   bool PpmFlag;
   bool RadioFlag;
-  uint16_t Data3[ NoOfPPMs ];
   uint16_t Data4[ NoOfPPMs ];
-  uint32_t Index3;
   uint32_t Index4;
-  uint32_t OldIC3;
   uint32_t OldIC4;
   TSx1268 Radio;
   TAesCrypto AesCrypto;

@@ -21,9 +21,6 @@ void TRosalynTx::Loop()
 
   if(( HAL_GetTick() % 1000 ) == 0 )
   {
-    UsbPrintf( "3: %4u %4u %4u %4u %4u %4u %4u %4u\n",
-      Data3[ 0 ], Data3[ 1 ], Data3[ 2 ], Data3[ 3 ],
-      Data3[ 4 ], Data3[ 5 ], Data3[ 6 ], Data3[ 7 ] );
     UsbPrintf( "4: %4u %4u %4u %4u %4u %4u %4u %4u\n",
       Data4[ 0 ], Data4[ 1 ], Data4[ 2 ], Data4[ 3 ],
       Data4[ 4 ], Data4[ 5 ], Data4[ 6 ], Data4[ 7 ] );
@@ -41,7 +38,7 @@ void TRosalynTx::TransmitPPM()
 {
   TSbusData SbusData;
 
-  SbusData.SetPWM( Data3 );
+  SbusData.SetPWM( Data4 );
   auto const SbusFrame = SbusData.Encode();
 
   uint8_t Buffer[ TSbusFrame::SbusFrameSize ];
@@ -116,16 +113,6 @@ void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
     }
     break;
 
-    case RADIO_DIO2_Pin:
-    {
-    }
-    break;
-
-    case RADIO_BUSY_Pin:
-    {
-    }
-    break;
-
     default:
     {
       HmiError( true );
@@ -136,34 +123,7 @@ void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
 
 void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
 {
-  if( htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3 )
-  {
-    uint32_t const NewIC3 = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_3 );
-
-    uint32_t Diff3 = 0;
-    if( NewIC3 > OldIC3 )
-    {
-      Diff3 = NewIC3 - OldIC3;
-    }
-    else if( NewIC3 < OldIC3 )
-    {
-      Diff3 = (( 0xFFFFFFFF - OldIC3 ) + NewIC3 ) + 1;
-    }
-
-    Diff3 /= 48; // Convert to milliseconds
-    OldIC3 = NewIC3;
-
-    if(( Diff3 >= MinPPM ) && ( Diff3 <= MaxPPM ) && ( Index3 < NoOfPPMs ))
-    {
-      Data3[ Index3++ ] = Diff3;
-    }
-    else
-    {
-      Index3 = 0;
-      PpmFlag = true;
-    }
-  }
-  else if( htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4 )
+  if( htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4 )
   {
     uint32_t const NewIC4 = HAL_TIM_ReadCapturedValue( htim, TIM_CHANNEL_4 );
 
@@ -174,7 +134,7 @@ void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
     }
     else if( NewIC4 < OldIC4 )
     {
-      Diff4 = (( 0xFFFFFFFF - OldIC4 ) + NewIC4 ) + 1;
+      Diff4 = (( 0xFFFFFFFFu - OldIC4 ) + NewIC4 ) + 1;
     }
 
     Diff4 /= 48; // Convert to milliseconds
@@ -199,24 +159,21 @@ TRosalynTx::TRosalynTx() :
   NvData(),
   PpmFlag( false ),
   RadioFlag( false ),
-  Data3(),
   Data4(),
-  Index3( 0 ),
   Index4( 0 ),
-  OldIC3( 0 ),
   OldIC4( 0 ),
   Radio(
     433050000,
-	RADIO_NSS_GPIO_Port,
-	RADIO_NSS_Pin,
-	RADIO_NRST_GPIO_Port,
-	RADIO_NRST_Pin,
-	RADIO_BUSY_GPIO_Port,
-	RADIO_BUSY_Pin,
-	RADIO_RXEN_GPIO_Port,
-	RADIO_RXEN_Pin,
-	RADIO_TXEN_GPIO_Port,
-	RADIO_TXEN_Pin,
+    RADIO_NSS_GPIO_Port,
+    RADIO_NSS_Pin,
+    RADIO_NRST_GPIO_Port,
+    RADIO_NRST_Pin,
+    RADIO_BUSY_GPIO_Port,
+    RADIO_BUSY_Pin,
+    RADIO_RXEN_GPIO_Port,
+    RADIO_RXEN_Pin,
+    RADIO_TXEN_GPIO_Port,
+    RADIO_TXEN_Pin,
     std::bind( &TRosalynTx::RadioEvent, this, std::placeholders::_1 )),
   AesCrypto( NvData.AesIV, NvData.AesKey )
 {

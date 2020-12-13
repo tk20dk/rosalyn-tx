@@ -62,20 +62,6 @@ bool TSx1268::Setup( Modulation_t const &Modulation, int32_t const TxPower, uint
 
   SetBufferBaseAddresses( 0, 0 );
 
-  auto const Size = 128;
-  uint8_t BufRx[ Size ] = { 0 };
-  uint8_t BufTx[ Size ];
-  for( auto Index = 0; Index < Size; Index++ )
-  {
-    BufTx[ Index ] = static_cast< uint8_t >( Index );
-  }
-  WriteBuffer( 0, BufTx, Size );
-  ReadBuffer( 0, BufRx, Size );
-  if( memcmp( BufTx, BufRx, Size ) != 0 )
-  {
-    return false;
-  }
-
   PacketParams.PayloadLength       = 0;
   PacketParams.PreambleLength      = 12;
   PacketParams.CrcMode             = LORA_CRC_ON;
