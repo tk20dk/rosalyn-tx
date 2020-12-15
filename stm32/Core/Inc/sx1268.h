@@ -97,6 +97,7 @@ public:
 
 private:
   void Reset();
+  void SetFallbackMode( uint8_t const Mode );
   void SetStandby( RadioStandbyModes_t const StandbyConfig );
   void SetPacketType( RadioPacketTypes_t const PacketType );
   void SetRfFrequency( uint32_t const Frequency );
@@ -138,7 +139,6 @@ private:
   bool ImageCalibrated;
   uint32_t const BaseFreq;
   uint32_t FrequencyError;
-  RadioOperatingModes_t OperatingMode;
   PacketParams_t PacketParams;
   GPIO_TypeDef *const PortNSS;
   uint32_t const PinNSS;

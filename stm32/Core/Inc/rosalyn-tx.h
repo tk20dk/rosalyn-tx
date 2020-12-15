@@ -20,6 +20,9 @@ public:
 
   void Loop();
   void Setup();
+  void HmiLoop();
+  void HmiError( uint32_t const Interval = 0 );
+  void HmiStatus( uint32_t const Interval = 0 );
   void TransmitPPM();
   void RadioEvent( TRadioEvent const Event );
   void HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin );
@@ -32,6 +35,8 @@ private:
   uint16_t Data4[ NoOfPPMs ];
   uint32_t Index4;
   uint32_t OldIC4;
+  uint32_t TimeoutHmiError;
+  uint32_t TimeoutHmiStatus;
   TSx1268 Radio;
   TAesCrypto AesCrypto;
 };

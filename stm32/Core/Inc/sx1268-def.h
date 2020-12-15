@@ -54,18 +54,6 @@ enum RadioStates_t
   RF_CAD,         // The radio is doing channel activity detection
 };
 
-enum RadioOperatingModes_t
-{
-  MODE_SLEEP = 0x00, // The radio is in sleep mode
-  MODE_STDBY_RC,     // The radio is in standby mode with RC oscillator
-  MODE_STDBY_XOSC,   // The radio is in standby mode with XOSC oscillator
-  MODE_FS,           // The radio is in frequency synthesis mode
-  MODE_TX,           // The radio is in transmit mode
-  MODE_RX,           // The radio is in receive mode
-  MODE_RX_DC,        // The radio is in receive duty cycle mode
-  MODE_CAD           // The radio is in channel activity detection mode
-};
-
 enum RadioStandbyModes_t
 {
   STDBY_RC   = 0x00,

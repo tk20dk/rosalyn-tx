@@ -7,6 +7,13 @@ TRosalynTx RosalynTx;
 
 void TRosalynTx::Loop()
 {
+  HmiLoop();
+
+  if(( HAL_GetTick() % 1000 ) == 0 )
+  {
+    HmiStatus( 10 );
+  }
+
   if( RadioFlag )
   {
     RadioFlag = false;
@@ -16,21 +23,9 @@ void TRosalynTx::Loop()
   if( PpmFlag )
   {
     PpmFlag = false;
+HmiErrorExt( true );
+HmiStatusExt( true );
     TransmitPPM();
-  }
-
-//  if(( HAL_GetTick() % 1000 ) == 0 )
-//  {
-//    UsbPrintf( "4: %4u %4u %4u %4u %4u %4u %4u %4u\n",
-//      Data4[ 0 ], Data4[ 1 ], Data4[ 2 ], Data4[ 3 ],
-//      Data4[ 4 ], Data4[ 5 ], Data4[ 6 ], Data4[ 7 ] );
-//  }
-
-  if(( HAL_GetTick() % 1000 ) == 0 )
-  {
-    HmiStatus( true );
-    HAL_Delay( 5 );
-    HmiStatus( false );
   }
 }
 
@@ -50,13 +45,13 @@ void TRosalynTx::TransmitPPM()
   }
   else
   {
-    HmiError( true );
+    HmiError();
   }
 }
 
 void TRosalynTx::RadioEvent( TRadioEvent const Event )
 {
-  uint8_t Buffer[ 256 ];
+  uint8_t Buffer[ 64 ];
 
   if( Event == TRadioEvent::RxDone )
   {
@@ -64,18 +59,21 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u Length error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UartPrintf( "Rssi:%4d Snr:%3d.%u Len:%u Length error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
 
     Radio.Receive();
+HmiErrorExt( false );
   }
 
   if( Event == TRadioEvent::TxDone )
   {
     Radio.Receive();
+HmiStatusExt( false );
   }
 
   if( Event == TRadioEvent::Timeout )
   {
+    HmiError();
   }
 
   if( Event == TRadioEvent::CrcError )
@@ -84,7 +82,9 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u CRC Error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UartPrintf( "Rssi:%4d Snr:%3d.%u Len:%u CRC Error\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    HmiError();
+    Radio.Receive();
   }
 
   if( Event == TRadioEvent::NoCrc )
@@ -93,7 +93,9 @@ void TRosalynTx::RadioEvent( TRadioEvent const Event )
     auto const Rssi = Radio.GetRssi();
     auto const Length = Radio.ReadPacket( Buffer, sizeof( Buffer ));
 
-    UsbPrintf( "Rssi:%4d Snr:%3d.%u Len:%u No CRC\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    UartPrintf( "Rssi:%4d Snr:%3d.%u Len:%u No CRC\n", Rssi, Snr / 10, abs(Snr) % 10, Length );
+    HmiError();
+    Radio.Receive();
   }
 }
 
@@ -101,12 +103,45 @@ void TRosalynTx::Setup()
 {
 //  NvData.Setup();
   UsbPrintf( "RosalynTX\n" );
-  HmiStatus( true );
+  HmiStatus( 100 );
 
   if( Radio.Setup( NvData.Modulation[ 2 ], NvData.TxPower, NvData.Channel ))
   {
     Radio.Receive();
   }
+}
+
+void TRosalynTx::HmiLoop()
+{
+  if( TimeoutHmiError && ( HAL_GetTick() >= TimeoutHmiError ))
+  {
+    TimeoutHmiError = 0;
+    SetPin( HMI_ERROR_GPIO_Port, HMI_ERROR_Pin );
+  }
+
+  if( TimeoutHmiStatus && ( HAL_GetTick() >= TimeoutHmiStatus ))
+  {
+    TimeoutHmiStatus = 0;
+    SetPin( HMI_STATUS_GPIO_Port, HMI_STATUS_Pin );
+  }
+}
+
+void TRosalynTx::HmiError( uint32_t const Interval )
+{
+  if( Interval )
+  {
+	TimeoutHmiError = HAL_GetTick() + Interval;
+  }
+  ResetPin( HMI_ERROR_GPIO_Port, HMI_ERROR_Pin );
+}
+
+void TRosalynTx::HmiStatus( uint32_t const Interval )
+{
+  if( Interval )
+  {
+    TimeoutHmiStatus = HAL_GetTick() + Interval;
+  }
+  ResetPin( HMI_STATUS_GPIO_Port, HMI_STATUS_Pin );
 }
 
 void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
@@ -121,7 +156,7 @@ void TRosalynTx::HAL_GPIO_EXTI_Callback( uint16_t const GPIO_Pin )
 
     default:
     {
-      HmiError( true );
+      HmiError();
     }
     break;
   }
@@ -158,7 +193,7 @@ void TRosalynTx::HAL_TIM_IC_CaptureCallback( TIM_HandleTypeDef *const htim )
   }
   else
   {
-    HmiError( true );
+    HmiError();
   }
 }
 
@@ -169,6 +204,8 @@ TRosalynTx::TRosalynTx() :
   Data4(),
   Index4( 0 ),
   OldIC4( 0 ),
+  TimeoutHmiError( 0 ),
+  TimeoutHmiStatus( 0 ),
   Radio(
     433050000,
     RADIO_NSS_GPIO_Port,

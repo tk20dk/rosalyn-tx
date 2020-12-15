@@ -17,7 +17,6 @@ TSx1268::TSx1268(
   ImageCalibrated( false ),
   BaseFreq( BaseFreq ),
   FrequencyError( 0 ),
-  OperatingMode( MODE_SLEEP ),
   PacketParams(),
   PortNSS( PortNSS ),
   PinNSS( PinNSS ),
@@ -79,9 +78,10 @@ bool TSx1268::Setup( Modulation_t const &Modulation, int32_t const TxPower, uint
     }
   }
 
-  SetStandby( STDBY_RC );
   ClearIrqStatus( IRQ_RADIO_ALL );
   ClearDeviceErrors();
+
+  SetFallbackMode( 0x30 ); // STDBY_XOSC
 
   SetPacketType( PACKET_TYPE_LORA );
   SetModulationParams( ModulationParams );
@@ -96,6 +96,7 @@ void TSx1268::SetTxPower( int32_t const TxPower )
 {
   SetTxParams( TxPower, RADIO_RAMP_200_US );
 }
+
 void TSx1268::SetModulation( Modulation_t const &Modulation )
 {
   ModulationParams_t ModulationParams;
@@ -150,19 +151,16 @@ void TSx1268::Receive()
 void TSx1268::SetStandby( RadioStandbyModes_t const standbyConfig )
 {
   WriteCommand( RADIO_SET_STANDBY, ( uint8_t* )&standbyConfig, 1 );
-  if( standbyConfig == STDBY_RC )
-  {
-    OperatingMode = MODE_STDBY_RC;
-  }
-  else
-  {
-    OperatingMode = MODE_STDBY_XOSC;
-  }
 }
 
 void TSx1268::SetPacketType( RadioPacketTypes_t packetType )
 {
   WriteCommand( RADIO_SET_PACKETTYPE, ( uint8_t* )&packetType, 1 );
+}
+
+void TSx1268::SetFallbackMode( uint8_t const Mode )
+{
+  WriteCommand( RADIO_SET_TXFALLBACKMODE, &Mode, 1 );
 }
 
 void TSx1268::SetRfFrequency( uint32_t const Frequency )
@@ -323,10 +321,8 @@ void TSx1268::SetDioIrqParams( uint16_t irqMask, uint16_t dio1Mask, uint16_t dio
 
 void TSx1268::SetRx( uint32_t const Timeout )
 {
-  OperatingMode = MODE_RX;
-
-  SetPin( PortRXEN, PinRXEN );
   ResetPin( PortTXEN, PinTXEN );
+  SetPin( PortRXEN, PinRXEN );
 
   uint8_t buf[3];
   buf[0] = ( uint8_t )( ( Timeout >> 16 ) & 0xFF );
@@ -474,10 +470,8 @@ void TSx1268::Transmit( void const *const Buffer, uint16_t const Length )
 
 void TSx1268::SetTx( uint32_t const Timeout )
 {
-  OperatingMode = MODE_TX;
-
-  SetPin( PortTXEN, PinTXEN );
   ResetPin( PortRXEN, PinRXEN );
+  SetPin( PortTXEN, PinTXEN );
 
   uint8_t buf[3];
   buf[0] = (uint8_t)( ( Timeout >> 16 ) & 0xFF );
@@ -492,12 +486,10 @@ void TSx1268::WriteCommand( RadioCommands_t const Command, uint8_t const *const 
 
   ResetPin( PortNSS, PinNSS );
   Spi.Write( ( uint8_t )Command );
-  for( auto i = 0U; i < Length; i++ )
-  {
-    Spi.Write( Buffer[i] );
-  }
+  Spi.Write( Buffer, Length );
   SetPin( PortNSS, PinNSS );
 
+  // Wait for BUSY to set
   for( auto counter = 0; counter < 15; counter++ )
   {
     __NOP();
@@ -511,10 +503,7 @@ void TSx1268::ReadCommand( RadioCommands_t const Command, uint8_t *const Buffer,
   ResetPin( PortNSS, PinNSS );
   Spi.Write( (uint8_t)Command );
   Spi.Write( 0 );
-  for( auto i = 0U; i < Length; i++ )
-  {
-    Buffer[i] = Spi.WriteRead( 0 );
-  }
+  Spi.Read( Buffer, Length );
   SetPin( PortNSS, PinNSS );
 }
 
@@ -526,10 +515,7 @@ void TSx1268::WriteRegister( uint32_t const Address, uint8_t const *const Buffer
   Spi.Write( RADIO_WRITE_REGISTER );
   Spi.Write( ( Address & 0xFF00 ) >> 8 );
   Spi.Write( Address & 0x00FF );
-  for( auto i = 0U; i < Length; i++ )
-  {
-    Spi.Write( Buffer[i] );
-  }
+  Spi.Write( Buffer, Length );
   SetPin( PortNSS, PinNSS );
 }
 
@@ -547,10 +533,7 @@ void TSx1268::ReadRegister( uint32_t const Address, uint8_t *const Buffer, uint3
   Spi.Write( ( Address & 0xFF00 ) >> 8 );
   Spi.Write( Address & 0x00FF );
   Spi.Write( 0 );
-  for( auto i = 0U; i < Length; i++ )
-  {
-    Buffer[i] = Spi.WriteRead( 0 );
-  }
+  Spi.Read( Buffer, Length );
   SetPin( PortNSS, PinNSS );
 }
 
